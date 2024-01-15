@@ -3,14 +3,28 @@ import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
 const Page = () => {
+  const [messages, setMessages] = useState([]);
   const [prompt, setPrompt] = useState("");
-  const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async () => {
+  const addMessage = (text, isUser = false) => {
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { text, isUser, timestamp: new Date().toISOString() },
+    ]);
+  };
+
+  const handleSend = async () => {
+    if (prompt.trim() === "") {
+      toast.error("Please enter a prompt before sending.");
+      return;
+    }
+
     try {
       setLoading(true);
-      const apiResponse = await fetch("http://localhost:3000/api/chat", {
+      addMessage(prompt, true);
+
+      const apiResponse = await fetch(`${window.origin}/api/chat`, {
         method: "POST",
         body: JSON.stringify({
           prompt: prompt,
@@ -25,73 +39,65 @@ const Page = () => {
       }
 
       const data = await apiResponse.json();
-      setResponse(data.text);
+      addMessage(data.text);
 
       setPrompt("");
       toast.success("Data fetched successfully");
     } catch (error) {
       toast.error(`Error fetching data: ${error.message}`);
-      setResponse("Error occurred");
+      addMessage("Error occurred");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center bg-gray-100">
-      <h1 className="text-4xl font-semibold underline text-indigo-800 my-4">
-        SastA CHATGPT
+    <div className="flex flex-col items-center justify-center min-h-screen px-8 text-center bg-gray-100">
+      <h1 className="text-4xl underline decoration-slate-400 font-semibold text-indigo-800 ">
+        GEMINI <span className="text-sky-500">GPT</span>
       </h1>
 
-      <div className="flex justify-center items-center mt-8">
-        <div className="w-full max-w-md">
-          <label
-            htmlFor="prompt"
-            className="block mb-2 text-sm font-medium text-gray-900"
+      <div className="w-full">
+        {messages.map((message, index) => (
+          <div
+            key={index}
+            className={`${
+              message.isUser ? "flex justify-end" : "flex justify-start"
+            } mb-4 ${index !== messages.length - 1 ? "pb-4" : ""}`}
           >
-            Enter your prompt
-          </label>
-          <input
-            type="text"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            className="border border-gray-300 p-2 rounded w-full text-black"
-          />
-
-          <button
-            className={`flex ${
-              loading
-                ? "bg-gray-500 cursor-not-allowed"
-                : "bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-indigo-500 hover:to-purple-500 hover:shadow-lg"
-            } p-3 md:w-full rounded-lg`}
-            onClick={handleSubmit}
-            disabled={loading}
-          >
-            <svg
-              height="24"
-              width="24"
-              fill="#FFFFFF"
-              viewBox="0 0 24 24"
-              data-name="Layer 1"
-              id="Layer_1"
-              className={`sparkle ${loading ? "animate-spin" : ""} `}
+            <div
+              className={`${
+                message.isUser
+                  ? "bg-indigo-500 text-white"
+                  : "bg-gray-200 text-black"
+              } p-3 rounded-lg max-w-full break-words shadow`}
             >
-              <path d="M10,21.236,6.755,14.745.264,11.5,6.755,8.255,10,1.764l3.245,6.491L19.736,11.5l-6.491,3.245ZM18,21l1.5,3L21,21l3-1.5L21,18l-1.5-3L18,18l-3,1.5ZM19.333,4.667,20.5,7l1.167-2.333L24,3.5,21.667,2.333,20.5,0,19.333,2.333,17,3.5Z"></path>
-            </svg>
+              {message.text}
+            </div>
+          </div>
+        ))}
 
-            <span className={`text ${loading ? "opacity-50" : ""}`}>
+        <div className="bg-white bottom-0 shadow-md rounded-md p-4 mb-4">
+          <div className="mb-2 text-sm font-medium text-gray-900">
+            User Prompt
+          </div>
+          <div className="flex items-center">
+            <input
+              type="text"
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              className="border border-gray-300 p-2 rounded w-full text-black"
+            />
+            <button
+              className="ml-2 bg-indigo-500 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-110"
+              onClick={handleSend}
+              disabled={loading}
+            >
               {loading ? "Sending..." : "Send"}
-            </span>
-          </button>
+            </button>
+          </div>
         </div>
       </div>
-
-      {response && (
-        <div className="mt-4 p-4 bg-white shadow-md rounded-md">
-          <p className="text-gray-700 font-bold">{prompt}</p>
-          <p className="text-gray-800">{response}</p>
-        </div>
-      )}
     </div>
   );
 };
