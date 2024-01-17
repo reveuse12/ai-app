@@ -19,11 +19,11 @@ function MobileNav({ open, setOpen }) {
           Home
         </Link>
         <Link
-          href="#"
+          href="/home"
           className="text-3xl font-bold hover:text-purple-500 my-4 transition-all duration-300"
           passHref
         >
-          About Us
+          Chat
         </Link>
         <Link
           href="#"

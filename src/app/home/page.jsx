@@ -52,11 +52,10 @@ const Page = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen px-8 text-center bg-gray-100">
-      <h1 className="text-4xl underline decoration-slate-400 font-semibold text-indigo-800 ">
-        GEMINI <span className="text-sky-500">GPT</span>
+    <div className="flex flex-col items-center justify-center min-h-screen px-8 text-center bg-gradient-to-r from-indigo-500 to-purple-500">
+      <h1 className="text-4xl font-semibold text-white ">
+        GEMINI <span className="text-white">GPT</span>
       </h1>
-
       <div className="w-full">
         {messages.map((message, index) => (
           <div
@@ -69,32 +68,33 @@ const Page = () => {
               className={`${
                 message.isUser
                   ? "bg-indigo-500 text-white"
-                  : "bg-gray-200 text-black"
-              } p-3 rounded-lg max-w-full break-words shadow`}
+                  : "bg-white text-black"
+              } p-3 rounded-lg max-w-md break-words shadow-lg`}
             >
               {message.text}
             </div>
           </div>
         ))}
-
-        <div className="bg-white bottom-0 shadow-md rounded-md p-4 mb-4">
-          <div className="mb-2 text-sm font-medium text-gray-900">
-            User Prompt
-          </div>
-          <div className="flex items-center">
-            <input
-              type="text"
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              className="border border-gray-300 p-2 rounded w-full text-black"
-            />
-            <button
-              className="ml-2 bg-indigo-500 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-110"
-              onClick={handleSend}
-              disabled={loading}
-            >
-              {loading ? "Sending..." : "Send"}
-            </button>
+        <div className="w-full">
+          <div className="bg-white bottom-0 shadow-md rounded-md p-4 mb-4">
+            <div className="mb-2 text-sm font-medium text-gray-900">
+              User Prompt
+            </div>
+            <div className="flex  items-center">
+              <input
+                type="text"
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                className="border border-gray-300 p-2 rounded w-full text-black focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              />
+              <button
+                className="ml-2 bg-indigo-500 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-110"
+                onClick={handleSend}
+                disabled={loading}
+              >
+                {loading ? "Sending..." : "Send"}
+              </button>
+            </div>
           </div>
         </div>
       </div>
